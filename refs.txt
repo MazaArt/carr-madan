@@ -1,0 +1,1 @@
+yfinance reference: https://ranaroussi.github.io/yfinance/reference/index.html
