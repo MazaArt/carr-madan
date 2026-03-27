@@ -1,4 +1,4 @@
-### Setup
+# Setup
 
-# Prerequisites:
+## Prerequisite Libraries:
 - yfinance : `pip install yfinance`
