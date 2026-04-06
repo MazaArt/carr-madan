@@ -1,22 +1,35 @@
 # Carr Madan approximation of VIX 
 import math 
+from datetime import timedelta, datetime
+
+
+
 
 
 # Load initial values 
-T = 0 
+T = 30 / 365 
 sm = 0 
 r = 0.02
 
 # When loading bid, ask and strike prices, ensure you flip between put and call such that the option used is always out of the money. 
+
+ticker_symbol = ""
+
+days_until_expiry = T * 365
+option_expiry_date = datetime.now() + timedelta(days=days_until_expiry) # Assumption: we mean business days 
+print(option_expiry_date)
+
+S0 = 0 # placeholder 
+F = S0 * math.e ** r * T 
 bids = []
 asks = []
 strikes = []
-F = 0 
-K0 = 0 
 
-# ignore first term 
-for i in range(1, len(strikes)):
-    delta_strike = strikes[i] - strikes[i - 1] 
+K0 = 0 # placeholder - K0 is the first strike less than or equal to s0 
+
+# ignore first and last term for delta_strike calculations 
+for i in range(1, len(strikes) - 1):
+    delta_strike = (strikes[i + 1] - strikes[i - 1]) / 2 # midpoint rule 
     discount = math.e ** r * T
     q_term = (bids[i] + asks[i]) / 2
 
