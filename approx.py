@@ -36,10 +36,7 @@ S0 = 6816.89
 
 F = S0 * math.e ** (r * T)
 
-# load the 30 days out bid, ask and strike prices - only out of the money (put - above current value, call - below current value)
-
-# while curr_strike < S0 - call is out of the money 
-# while curr_strike >= S0 - put is out of the money 
+# load the 30 days out bid, ask and strike prices - only out of the money 
 calls = calls[calls['strike'] > S0]
 puts = puts[puts['strike'] <= S0]
 
