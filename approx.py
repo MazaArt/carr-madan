@@ -7,7 +7,7 @@ import numpy as np
 # Load initial values 
 T = 30 / 365 
 sm = 0 
-r = 0.02
+r = 0.0431
 
 # When loading bid, ask and strike prices, ensure you flip between put and call such that the option used is always out of the money. 
 
@@ -27,6 +27,9 @@ for idx, exp in enumerate(stock_data.options): # this consists of a tuple of dat
 
 calls = stock_data.option_chain(stock_data.options[exp_dat_map[option_expiry_date]]).calls
 puts = stock_data.option_chain(stock_data.options[exp_dat_map[option_expiry_date]]).puts
+
+# calls.to_csv(f'calls_{datetime.now().date()}.csv')
+# puts.to_csv(f'puts_{datetime.now().date()}.csv')
 
 calls = calls[['bid', 'ask', 'strike']]
 puts = puts[['bid', 'ask', 'strike']]
