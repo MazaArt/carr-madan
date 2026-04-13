@@ -35,7 +35,7 @@ calls = calls[['bid', 'ask', 'strike']]
 puts = puts[['bid', 'ask', 'strike']]
 # current_price = tkr.info.get('currentPrice')
 # print(current_price)
-S0 = 6816.89 
+S0 = 6817.85
 
 F = S0 * math.e ** (r * T)
 
@@ -68,3 +68,11 @@ sigma_square = (2 / T) * (sm) + error_correction
 print("Error correction term:", error_correction)
 print("Numerical Approx Sigma Squared:", sigma_square)
 print("VIX:", 100 * math.sqrt(sigma_square))
+# Eq. 19 from the Greg Gundersen blog 
+# note that sm1 + sm2 is exactly the previous variable sm which we already calculated, given that our approximation must be discrete. 
+sm1 = sm
+sm2 = 0
+
+sigma_square_k = 2 / T * (sm1 + sm2) + 2 / T * math.log(F / S0) - 2 / T * (F / S0 - 1)
+print("new sigma square:", sigma_square_k)
+print("new vix:", math.sqrt(sigma_square_k) * 100)
