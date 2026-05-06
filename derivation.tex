@@ -1,0 +1,211 @@
+\documentclass{article}
+\usepackage{graphicx, indentfirst, amssymb, amsmath, amsthm, placeins, xurl, hyperref, multicol, algorithm, algorithmic} 
+% \FloatBarrier
+
+\title{Carr-Madan \& VIX}
+\author{Artem Ivaniuk}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Carr-Madan \& VIX Derivation}
+
+\subsection*{1. Log Dynamics and Ito's Lemma}
+
+Under the risk-neutral measure:
+$dS_t = r S_t dt + \sigma_t S_t dW_t$
+
+Applying Ito's lemma to $\log S_t$:
+$d\log S_t = \frac{1}{S_t} dS_t - \frac{1}{2}\frac{1}{S_t^2} (dS_t)^2$
+
+Since $(dS_t)^2 = \sigma_t^2 S_t^2 dt$, 
+$d\log S_t = \left(r - \frac{1}{2}\sigma_t^2\right) dt + \sigma_t dW_t$
+
+Integrating from $0$ to $T$,
+\[
+\log S_T - \log S_0
+= \int_0^T \left(r - \frac{1}{2}\sigma_t^2\right) dt
++ \int_0^T \sigma_t dW_t
+\]
+
+Taking expectations,
+\[
+\mathbb{E}[\log S_T]
+= \log S_0 + rT - \frac{1}{2} \mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+\]
+
+Then,
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+= 2\left(rT - \mathbb{E}[\log(S_T/S_0)]\right)
+\]
+
+Let $F = S_0 e^{rT}$, then:
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+= -2\,\mathbb{E}\left[\log\left(\frac{S_T}{F}\right)\right]
+\]
+
+\subsection*{2. Carr-Madan Spanning Formula}
+
+For a twice differentiable payoff $f$, we have:
+\[
+f(S_T) = f(F) + f'(F)(S_T - F)
++ \int_0^F f''(K)(K - S_T)^+ dK
++ \int_F^\infty f''(K)(S_T - K)^+ dK
+\]
+
+Choosing
+$f(S_T) = -2 \log\left(\frac{S_T}{F}\right)$
+
+Then,
+$f'(S) = -\frac{2}{S}, \quad f''(S) = \frac{2}{S^2}$
+
+So $f''(K) = \frac{2}{K^2}$
+
+Substitute into the spanning formula:
+\[
+f(S_T)
+= f(F) + f'(F)(S_T - F)
++ \int_0^F \frac{2}{K^2}(K - S_T)^+ dK
++ \int_F^\infty \frac{2}{K^2}(S_T - K)^+ dK
+\]
+
+\subsection*{3. Taking Expectations and Vanishing of Linear Terms}
+
+From Carr-Madan:
+\[
+f(S_T)
+= f(F) + f'(F)(S_T - F)
++ \int_0^F \frac{2}{K^2}(K - S_T)^+ dK
++ \int_F^\infty \frac{2}{K^2}(S_T - K)^+ dK
+\]
+
+Since
+$f(S) = -2\log\left(\frac{S}{F}\right)$, 
+$f(F) = -2\log(1) = 0$ 
+
+Similarly, $f'(S) = -\frac{2}{S} \Rightarrow f'(F) = -\frac{2}{F}$
+
+Thus the linear component becomes:
+\[
+f(F) + f'(F)(S_T - F) = -\frac{2}{F}(S_T - F)
+\]
+
+Now take expectations under the risk-neutral measure:
+\[
+\mathbb{E}\left[-\frac{2}{F}(S_T - F)\right]
+= -\frac{2}{F}\left(\mathbb{E}[S_T] - F\right)
+\]
+
+By definition
+$\mathbb{E}[S_T] = F$, so 
+$\mathbb{E}\left[f(F) + f'(F)(S_T - F)\right] = 0$
+
+Hence, linear terms vanish in expectation
+
+Taking expectations of the full decomposition:
+\[
+\mathbb{E}[f(S_T)]
+=
+\int_0^F \frac{2}{K^2} P(K)\, dK
++ \int_F^\infty \frac{2}{K^2} C(K)\, dK
+\]
+
+From Section 1:
+\[
+\mathbb{E}[f(S_T)]
+= \mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+\]
+
+Thus:
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+=
+\int_0^F \frac{2}{K^2} P(K)\, dK
++ \int_F^\infty \frac{2}{K^2} C(K)\, dK
+\]
+\subsection*{4. VIX Formula}
+
+The VIX (CBOE) discretizes this integral:
+\[
+\text{VIX}^2
+\approx \frac{2}{T} \sum_i \frac{\Delta K_i}{K_i^2} Q(K_i)
+\]
+
+where:
+\begin{itemize}
+\item $Q(K_i)$ are out-of-the-money option prices
+\item both puts ($K_i < F$) and calls ($K_i > F$) are used
+\item $\Delta K_i$ are strike spacings
+\end{itemize}
+
+\subsection*{5. Equivalence Between Carr-Madan and VIX}
+
+From Carr-Madan,
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+=
+\int_0^F \frac{2}{K^2} P(K)\, dK
++ \int_F^\infty \frac{2}{K^2} C(K)\, dK
+\]
+
+Define a unified function of out-of-the-money option prices:
+\[
+Q(K) =
+\begin{cases}
+P(K), & K < F \\
+C(K), & K > F
+\end{cases}
+\]
+
+Then the expression becomes
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+=
+\int_0^\infty \frac{2}{K^2} Q(K)\, dK
+\]
+
+Using a discrete grid of strikes $\{K_i\}_{i=1}^N$,
+\[
+\Delta K_i = \frac{K_{i+1} - K_{i-1}}{2}
+\]
+
+Using the Riemann sum approximation,
+\[
+\int_0^\infty \frac{2}{K^2} Q(K)\, dK
+\approx
+\sum_{i=1}^N \frac{2}{K_i^2} Q(K_i)\, \Delta K_i
+\]
+
+Thus,
+\[
+\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+\approx
+\sum_{i=1}^N \frac{2\,\Delta K_i}{K_i^2} Q(K_i)
+\]
+
+Finally, dividing by $T$ (variance per unit time),
+\[
+\frac{1}{T}\mathbb{E}\left[\int_0^T \sigma_t^2 dt\right]
+\approx
+\frac{2}{T} \sum_{i=1}^N \frac{\Delta K_i}{K_i^2} Q(K_i)
+\]
+
+Which is identical to
+\[
+\text{VIX}^2 \approx \frac{2}{T} \sum_{i=1}^N \frac{\Delta K_i}{K_i^2} Q(K_i)
+\]
+
+\subsection*{Therefore}
+In the limit:
+\[
+\text{VIX}^2 \to \frac{1}{T}
+\int_0^\infty \frac{2}{K^2} Q(K)\, dK
+\]
+
+which is the Carr-Madan representation of expected variance.
+
+
+\end{document}
